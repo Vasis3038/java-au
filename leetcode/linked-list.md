@@ -5,6 +5,7 @@
 + [Palindrome Linked List](#palindrome-linked-list)
 + [Merge Two Sorted Lists](#merge-two-sorted-lists)
 + [Intersection of Two Linked Lists](#intersection-of-two-linked-lists)
++ [Sort List](#sort-list)
 
 ## Reverse Linked List
 
@@ -561,6 +562,129 @@ class Solution {
             head = head.next;
         }
         return head;
+    }
+}
+```
+
+## Sort List
+
+https://leetcode.com/problems/sort-list/
+
+<details><summary>Test Cases</summary><blockquote>
+
+``` java
+import org.junit.jupiter.api.Test;
+import java.util.List;
+import static org.junit.jupiter.api.Assertions.*;
+
+class SolutionTest {
+
+    @Test
+    public void sortList() {
+        var expected = createLinkedList(List.of(1, 2, 2, 7, 8));
+        var actual = new Solution().sortList(createLinkedList(List.of(2, 7, 1, 8, 2)));
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void sortSortedList(){
+        var expected = createLinkedList(List.of(1, 2, 2, 7, 8, 8, 8, 12, 1000));
+        var actual = new Solution().sortList(createLinkedList(List.of(1, 2, 2, 7, 8, 8, 8, 12, 1000)));
+        assertEquals(expected, actual);
+    }
+
+    private ListNode createLinkedList(List<Integer> lst){
+        var head = new ListNode();
+        var cur = head;
+        for(int val: lst){
+            ListNode next = new ListNode();
+            next.val = val;
+            cur.next = next;
+            cur = cur.next;
+        }
+        return head.next;
+    }
+}
+```
+
+``` java
+import java.util.Objects;
+
+public class ListNode {
+    int val;
+    ListNode next;
+    ListNode() {}
+    ListNode(int val) { this.val = val; }
+    ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ListNode listNode = (ListNode) o;
+        return val == listNode.val && Objects.equals(next, listNode.next);
+    }
+
+    @Override
+    public String toString() {
+        return "ListNode{" +
+                "val=" + val +
+                ", next=" + next +
+                '}';
+    }
+}
+```
+
+</blockquote></details>
+
+```java
+public class Solution {
+    private ListNode middleNode(ListNode head) {
+        var slow = head;
+        var fast = head;
+        var prev = head;
+        while(fast!=null && fast.next != null){
+            prev = slow;
+            fast = fast.next.next;
+            slow = slow.next;
+        }
+        prev.next = null;
+        return slow;
+    }
+
+    private ListNode mergeTwoLists(ListNode list1, ListNode list2) {
+        if(list1 == null || list2 == null) {
+            return list1 == null ? list2 : list1;
+        }
+        if(list1.val < list2.val){
+            var justNode = list1;
+            list1 = list2;
+            list2 = justNode;
+        }
+        var head = list2;
+        var cur = head;
+        list2 = list2.next;
+        while(list1 != null && list2 != null){
+            if (list1.val > list2.val) {
+                list2 = list2.next;
+                cur = cur.next;
+            } else {
+                var next1 = list1.next;
+                cur.next = list1;
+                list1.next = list2;
+                list1 = next1;
+                cur = cur.next;
+            }
+        }
+        cur.next = list1 == null ? list2 : list1;
+        return head;
+    }
+
+    public ListNode sortList(ListNode head) {
+        if(head == null || head.next == null) return head;
+        ListNode head2 = sortList(middleNode(head));
+        ListNode head1 = sortList(head);
+        return mergeTwoLists(head1,head2);
     }
 }
 ```
