@@ -2,6 +2,7 @@
 
 + [Min Stack](#min-stack)
 + [Implement Stack using Queues](#implement-stack-using-queues)
++ [Implement Queue using Stacks](#implement-queue-using-stacks)
 
 ## Min Stack
 
@@ -96,7 +97,7 @@ public class MinStack {
 
 ## Implement Stack using Queues
 
-https://leetcode.com/problems/implement-stack-using-queues/submissions/
+https://leetcode.com/problems/implement-stack-using-queues/
 
 <details><summary>Test Cases</summary><blockquote>
 
@@ -105,7 +106,6 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class MyStackTest {
@@ -119,7 +119,7 @@ class MyStackTest {
             assertEquals(val, actualStack.pop());
         }
     }
-
+    
     @Test
     void top() {
         var testList = createRandomList(10);
@@ -130,19 +130,19 @@ class MyStackTest {
             actualStack.pop();
         }
     }
-
+    
     @Test
     void empty() {
         var actualStack = createMyStackFromList(List.of());
         assertTrue(actualStack.empty());
     }
-
+    
     @Test
     void notEmpty() {
         var actualStack = createMyStackFromList(createRandomList(5));
         assertFalse(actualStack.empty());
     }
-
+    
     private MyStack createMyStackFromList(List<Integer> lst){
         var stack = new MyStack();
         for (var val: lst) {
@@ -150,7 +150,7 @@ class MyStackTest {
         }
         return stack;
     }
-
+    
     private ArrayList<Integer> createRandomList(int size){
         var lst = new ArrayList<Integer>();
         for(int i = 0; i < size; i++){
@@ -193,6 +193,96 @@ public class MyStack {
 
     public boolean empty() {
         return q1.isEmpty();
+    }
+}
+```
+
+## Implement Queue using Stacks
+
+https://leetcode.com/problems/implement-queue-using-stacks/
+
+<details><summary>Test Cases</summary><blockquote>
+
+``` java
+import org.junit.jupiter.api.Test;
+import java.util.ArrayList;
+import java.util.List;
+import static org.junit.jupiter.api.Assertions.*;
+
+class MyQueueTest {
+
+    @Test
+    void pushPeekPop() {
+        var testList = createRandomList(10);
+        var actualQueue = createMyQueueFromList(testList);
+        for (var val: testList) {
+            assertEquals(val, actualQueue.peek());
+            actualQueue.pop();
+        }
+    }
+
+    @Test
+    void empty() {
+        var actualQueue = createMyQueueFromList(List.of());
+        assertTrue(actualQueue.empty());
+    }
+
+    @Test
+    void notEmpty() {
+        var actualQueue = createMyQueueFromList(createRandomList(10));
+        assertFalse(actualQueue.empty());
+    }
+
+    private MyQueue createMyQueueFromList(List<Integer> lst){
+        var stack = new MyQueue();
+        for (var val: lst) {
+            stack.push(val);
+        }
+        return stack;
+    }
+
+    private ArrayList<Integer> createRandomList(int size){
+        var lst = new ArrayList<Integer>();
+        for(int i = 0; i < size; i++){
+            lst.add((int)(Math.random() * 10));
+        }
+        return lst;
+    }
+}
+```
+
+</blockquote></details>
+
+```java
+public class MyQueue {
+    Stack s1;
+    Stack s2;
+
+    public MyQueue() {
+        s1 = new Stack<Integer>();
+        s2 = new Stack<Integer>();
+    }
+
+    public void push(int x) {
+        while (!s1.empty()) {
+            s2.push(s1.pop());
+        }
+        s1.push(x);
+        while (!s2.empty()) {
+            s1.push(s2.pop());
+        }
+    }
+
+    public int pop() {
+        return (Integer) s1.pop();
+    }
+
+    public int peek() {
+        return (Integer) s1.peek();
+    }
+
+    public boolean empty() {
+        return s1.empty();
     }
 }
 ```
