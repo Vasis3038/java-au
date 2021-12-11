@@ -4,6 +4,7 @@
 + [Middle of the Linked List](#middle-of-the-linked-list)
 + [Palindrome Linked List](#palindrome-linked-list)
 + [Merge Two Sorted Lists](#merge-two-sorted-lists)
++ [Intersection of Two Linked Lists](#intersection-of-two-linked-lists)
 
 ## Reverse Linked List
 
@@ -379,7 +380,7 @@ public class ListNode {
 </blockquote></details>
 
 ```java
-public class Solution {
+class Solution {
     public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
         if(list1 == null || list2 == null) {
             return list1 == null ? list2 : list1;
@@ -405,6 +406,160 @@ public class Solution {
             }
         }
         cur.next = list1 == null ? list2 : list1;
+        return head;
+    }
+}
+```
+
+## Intersection of Two Linked Lists
+
+https://leetcode.com/problems/intersection-of-two-linked-lists/
+
+<details><summary>Test Cases</summary><blockquote>
+
+``` java
+import org.junit.jupiter.api.Test;
+import java.util.List;
+import static org.junit.jupiter.api.Assertions.*;
+public class SolutionTest {
+
+    @Test
+    public void getIntersectionNode() {
+    var expected = createLinkedList(List.of(1, 2, 3));;
+    var headA = createLinkedList(List.of(1, 2, 1, 2, 3));
+    var headB = createLinkedList(List.of(2, 1, 2, 3));
+    intersectLists(headA, headB, 2, 1);
+    var actual = new Solution().getIntersectionNode(headA, headB);
+    assertEquals(expected, actual);
+    }
+
+    @Test
+    public void getNullIntersectionNode(){
+        var headA = createLinkedList(List.of(11, 2, 3, 2, 7));
+        var headB = createLinkedList(List.of(22, 3, 2, 7));
+        assertNull(new Solution().getIntersectionNode(headA, headB));
+    }
+
+    private ListNode createLinkedList(List<Integer> lst){
+        var head = new ListNode();
+        var cur = head;
+        for(int val: lst){
+            ListNode next = new ListNode();
+            next.val = val;
+            cur.next = next;
+            cur = cur.next;
+        }
+        return head.next;
+    }
+
+    private void intersectLists(ListNode headA, ListNode headB, int skipA, int skipB){
+        var headA2 = headA;
+        while(skipA != 0){
+            headA2 = headA2.next;
+            skipA--;
+        }
+        var headB2 = headB;
+        while(skipB < 1){
+            headB2 = headB2.next;
+            skipB--;
+        }
+        headB2.next = headA2;
+    }
+}
+```
+
+``` java
+import java.util.Objects;
+
+public class ListNode {
+    int val;
+    ListNode next;
+    ListNode() {}
+    ListNode(int val) { this.val = val; }
+    ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ListNode listNode = (ListNode) o;
+        return val == listNode.val && Objects.equals(next, listNode.next);
+    }
+
+    @Override
+    public String toString() {
+        return "ListNode{" +
+                "val=" + val +
+                ", next=" + next +
+                '}';
+    }
+}
+```
+
+</blockquote></details>
+
+```java
+class Solution {
+    private ListNode reverseLinkedList(ListNode head){
+        ListNode next;
+        ListNode prev = null;
+        var cur = head;
+        while(cur != null){
+            next = cur.next;
+            cur.next = prev;
+            prev = cur;
+            cur = next;
+        }
+        return prev;
+    }
+
+    private int numOfNodes(ListNode head){
+        var numOfNodes = 0;
+        while(head != null){
+            numOfNodes++;
+            head = head.next;
+        }
+        return numOfNodes;
+    }
+
+    private boolean areListsIntersected(ListNode headA, ListNode headB){
+        var num1 = numOfNodes(headA);
+        var num2 = numOfNodes(headB);
+        var headC = reverseLinkedList(headB);
+        var head = headC;
+        while(head.next != null){
+            head = head.next;
+        }
+        head.next = headA;
+        var counter = 0;
+        while(counter < num1 + 2 && headA != null){
+            headA = headA.next;
+            counter++;
+        }
+        var headC2 = headC;
+        while(num2 != 1){
+            headC2 = headC2.next;
+            num2--;
+        }
+        headC2.next = null;
+        reverseLinkedList(headC);
+        return headA == null ? false : true;
+    }
+
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        if(areListsIntersected(headA, headB) == false){
+            return null;
+        }
+        var num1 = numOfNodes(headA);
+        var num2 = numOfNodes(headB);
+        var headC = reverseLinkedList(headB);
+        var num3 = numOfNodes(headA);
+        reverseLinkedList(headC);
+        var indexOfIntersectionA = (num3-num2+num1-1)/2;
+        var head = headA;
+        for(int i = 0; i < indexOfIntersectionA; i++){
+            head = head.next;
+        }
         return head;
     }
 }
